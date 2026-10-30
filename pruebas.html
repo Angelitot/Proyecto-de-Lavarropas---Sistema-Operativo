@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pruebas · LAVACRÁN OS</title>
+  <link rel="icon" type="image/png" href="assets/icono.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=IBM+Plex+Mono:wght@400&family=Zilla+Slab:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; font-family: 'Archivo', system-ui, sans-serif; color: #1D2327; background: #E2E7E9; }
+    main { max-width: 860px; margin: 0 auto; padding: 28px 18px 40px; }
+    h1 { font-family: 'Zilla Slab', Georgia, serif; color: #B81C0E; font-size: 34px; margin: 0; }
+    .sub { color: #556168; margin: 6px 0 20px; max-width: 64ch; }
+    .resumen { font-size: 20px; font-weight: 700; padding: 14px 16px; border-radius: 10px; background: #fff; border: 2px solid #141410; }
+    .resumen.ok { border-color: #1AA35A; }
+    .resumen.mal { border-color: #B81C0E; }
+    h2 { font-size: 16px; margin: 26px 0 8px; }
+    ul { list-style: none; padding: 0; margin: 0; background: #fff; border-radius: 10px; border: 1px solid #CDD5D9; }
+    li { padding: 9px 14px; border-top: 1px solid #E5E9EB; display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: start; }
+    li:first-child { border-top: 0; }
+    .ok .m { color: #1AA35A; } .mal .m { color: #B81C0E; }
+    .ms { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7D888E; }
+    .error { grid-column: 2 / 4; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: #8E1509; }
+    a { color: #141410; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Pruebas automáticas</h1>
+    <p class="sub">Cada prueba arma un lavarropas nuevo, simula una situación y verifica que el sistema operativo haga lo acordado. Una hora de lavado se simula en milisegundos. <a href="index.html">Volver al simulador</a></p>
+    <div class="resumen" id="resumen">Corriendo…</div>
+    <div id="resultados"></div>
+  </main>
+  <script src="js/config.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/nucleo/eeprom.js"></script>
+  <script src="js/nucleo/kernel.js"></script>
+  <script src="js/nucleo/programas.js"></script>
+  <script src="js/hardware/planta.js"></script>
+  <script src="js/sensores/sensores.js"></script>
+  <script src="js/seguridad/alarmas.js"></script>
+  <script src="js/seguridad/tapa.js"></script>
+  <script src="js/seguridad/energia.js"></script>
+  <script src="js/panel/memoria.js"></script>
+  <script src="js/panel/diferido.js"></script>
+  <script src="js/panel/control.js"></script>
+  <script src="js/nucleo/ciclo.js"></script>
+  <script src="js/nucleo/sistema.js"></script>
+  <script src="tests/mini-test.js"></script>
+  <script src="tests/pruebas.js"></script>
+  <script>
+    setTimeout(function () {
+      const res = LAVACRAN.pruebas.correr();
+      const fallas = res.filter(r => !r.ok).length;
+      const resumen = document.getElementById('resumen');
+      resumen.textContent = fallas ? `${fallas} de ${res.length} pruebas fallaron.` : `Las ${res.length} pruebas pasaron.`;
+      resumen.className = 'resumen ' + (fallas ? 'mal' : 'ok');
+      const grupos = {};
+      res.forEach(r => { (grupos[r.grupo] = grupos[r.grupo] || []).push(r); });
+      const cont = document.getElementById('resultados');
+      Object.keys(grupos).forEach(g => {
+        const h = document.createElement('h2'); h.textContent = g; cont.appendChild(h);
+        const ul = document.createElement('ul');
+        grupos[g].forEach(r => {
+          const li = document.createElement('li'); li.className = r.ok ? 'ok' : 'mal';
+          li.innerHTML = `<span class="m">${r.ok ? '✔' : '✘'}</span><span></span><span class="ms">${r.ms} ms</span>`;
+          li.children[1].textContent = r.nombre;
+          if (!r.ok) { const e = document.createElement('div'); e.className = 'error'; e.textContent = r.error; li.appendChild(e); }
+          ul.appendChild(li);
+        });
+        cont.appendChild(ul);
+      });
+      document.title = (fallas ? '✘ ' : '✔ ') + document.title;
+    }, 30);
+  </script>
+</body>
+</html>

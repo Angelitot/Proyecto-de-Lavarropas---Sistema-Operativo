@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LAVACRÁN OS · Alacrán Group</title>
+  <meta name="description" content="Simulador del sistema operativo de un lavarropas de carga superior de 10 kg.">
+  <link rel="icon" type="image/png" href="assets/icono.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Share+Tech+Mono&family=Zilla+Slab:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <img class="barra-logo" src="assets/logo-alacran.png" alt="Lavarropas Alacrán Group" width="62" height="57">
+    <div class="barra-titulo">
+      <h1>LAVACRÁN <span>OS</span></h1>
+      <p>Simulador del sistema operativo de un lavarropas de carga superior de 10 kg. Prototipo 1.</p>
+    </div>
+    <div class="barra-sim" role="group" aria-label="Velocidad de la simulación">
+      <span class="barra-sim-etq">Velocidad</span>
+      <div class="segmentos" id="velocidades">
+        <button type="button" data-vel="1" aria-pressed="false">x1</button>
+        <button type="button" data-vel="10" aria-pressed="false">x10</button>
+        <button type="button" data-vel="60" aria-pressed="true">x60</button>
+      </div>
+      <button type="button" class="boton-borde" id="btn-adelantar" title="Simula rápido hasta que termine el paso actual">Adelantar fase</button>
+    </div>
+  </header>
+
+  <main class="escenario">
+    <!-- ===================== LAVARROPAS ===================== -->
+    <section class="col-maquina" aria-label="Lavarropas LAVACRÁN">
+      <div class="consola-maquina" id="panel" aria-label="Panel de control">
+        <div class="panel-fila">
+          <div class="perilla-zona" id="perilla-zona">
+            <button type="button" class="tecla-encendido" data-tecla="ENCENDIDO" aria-label="Encender o apagar" title="Encender / apagar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8M6.3 6.6a8 8 0 1 0 11.4 0" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            </button>
+            <div class="perilla-etiquetas" id="perilla-etiquetas"></div>
+            <button type="button" class="perilla" id="perilla" aria-label="Perilla de programas: pasar al siguiente programa">
+              <span class="perilla-cara"><span class="perilla-marca"></span></span>
+            </button>
+          </div>
+
+          <div class="lcd" id="lcd" role="status" aria-live="polite">
+            <div class="lcd-fila lcd-cabecera">
+              <span class="lcd-programa" id="lcd-programa">NORMAL / ALGODÓN</span>
+              <span class="lcd-iconos" id="lcd-iconos"></span>
+            </div>
+            <div class="lcd-fila lcd-tiempo-fila">
+              <span class="lcd-tiempo" id="lcd-tiempo">1:09</span>
+              <span class="lcd-tiempo-etq" id="lcd-tiempo-etq">estimado</span>
+            </div>
+            <div class="lcd-params">
+              <div><small>TEMP</small><span id="lcd-temp">30°</span></div>
+              <div><small>AGUA</small><span id="lcd-nivel">AUTO</span></div>
+              <div><small>CENTRIF</small><span id="lcd-rpm">800</span></div>
+              <div><small>CARGA KG</small><span id="lcd-kg">--</span></div>
+            </div>
+            <div class="lcd-fases" id="lcd-fases">
+              <span data-fase="lavado">LAVADO</span><span data-fase="vapor">VAPOR</span><span data-fase="enjuague">ENJUAGUE</span><span data-fase="centrifugado">CENTRIF</span>
+            </div>
+            <div class="lcd-mensaje" id="lcd-mensaje">LISTO</div>
+          </div>
+        </div>
+
+        <div class="panel-fila panel-teclas">
+          <button type="button" class="tecla" data-tecla="TEMPERATURA"><i class="led"></i>Temp.</button>
+          <button type="button" class="tecla" data-tecla="NIVEL"><i class="led"></i>Nivel</button>
+          <button type="button" class="tecla" data-tecla="CENTRIFUGADO"><i class="led"></i>Centrif.</button>
+          <button type="button" class="tecla" data-tecla="DIFERIDO" id="tecla-diferido"><i class="led"></i>Diferido</button>
+          <button type="button" class="tecla tecla-m" data-memoria="1" ><i class="led"></i>M1</button>
+          <button type="button" class="tecla tecla-m" data-memoria="2" ><i class="led"></i>M2</button>
+          <button type="button" class="tecla tecla-m" data-memoria="3" ><i class="led"></i>M3</button>
+          <button type="button" class="tecla" id="tecla-sonido"><i class="led"></i>Sonido</button>
+          <button type="button" class="tecla-inicio" id="tecla-inicio">
+            <span class="tecla-inicio-txt">Inicio / Pausa</span>
+            <small>mantener 2 s para cancelar</small>
+            <i class="tecla-inicio-carga" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="maquina-wrap" id="maquina-wrap">
+        <svg id="lavarropas" viewBox="0 46 600 734" role="img" aria-label="Lavarropas de carga superior animado"></svg>
+        <div class="sin-luz" id="sin-luz" hidden>
+          <strong>Sin energía</strong>
+          <span id="sin-luz-reloj">00:00</span>
+          <small>El reloj del sistema sigue con su batería</small>
+        </div>
+      </div>
+
+      <div class="maquina-acciones">
+        <button type="button" class="boton-tapa" id="btn-tapa">Abrir la tapa</button>
+        <label class="interruptor">
+          <input type="checkbox" id="chk-rayos" checked>
+          <span>Ver por dentro</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ===================== MESA DE PRUEBAS ===================== -->
+    <section class="col-pruebas" aria-labelledby="t-pruebas">
+      <h2 id="t-pruebas">Mesa de pruebas</h2>
+      <p class="intro">Acá se simula el mundo real: la ropa, la tapa, la luz y las fallas. El lavarropas no sabe nada de esto: se entera solo por sus sensores.</p>
+
+      <div class="bloque">
+        <h3>Ropa</h3>
+        <p class="bloque-estado" id="ropa-estado">El tambor está vacío.</p>
+        <div class="prendas" id="prendas"></div>
+        <div class="fila-botones">
+          <button type="button" class="boton-borde" data-carga="3">Cargar 3 kg</button>
+          <button type="button" class="boton-borde" data-carga="6">Cargar 6 kg</button>
+          <button type="button" class="boton-borde" data-carga="9.5">Cargar 9,5 kg</button>
+        </div>
+        <div class="fila-botones">
+          <button type="button" class="boton-borde" id="btn-sacar">Sacar la última prenda</button>
+          <button type="button" class="boton-borde" id="btn-vaciar">Vaciar el tambor</button>
+        </div>
+      </div>
+
+      <div class="bloque">
+        <h3>Corte de luz</h3>
+        <p class="bloque-estado" id="luz-estado">Hay luz.</p>
+        <div class="segmentos segmentos-claros" id="duraciones" role="group" aria-label="Duración del corte">
+          <button type="button" data-ms="300000" aria-pressed="false">5:00</button>
+          <button type="button" data-ms="1199000" aria-pressed="true">19:59</button>
+          <button type="button" data-ms="1200000" aria-pressed="false">20:00</button>
+          <button type="button" data-ms="2700000" aria-pressed="false">45:00</button>
+        </div>
+        <div class="fila-botones">
+          <button type="button" class="boton-rojo" id="btn-cortar">Cortar la luz 19:59</button>
+          <button type="button" class="boton-borde" id="btn-volver-luz" disabled>Volver a dar luz ahora</button>
+        </div>
+      </div>
+
+      <div class="bloque">
+        <h3>Instalación y fallas</h3>
+        <label class="interruptor"><input type="checkbox" id="chk-caliente" checked><span>Agua caliente conectada</span></label>
+        <label class="interruptor"><input type="checkbox" id="chk-canilla"><span>Canilla cerrada (falta de agua, E1)</span></label>
+        <label class="interruptor"><input type="checkbox" id="chk-desagote"><span>Desagote tapado (E2)</span></label>
+        <div class="fila-botones">
+          <button type="button" class="boton-borde" id="btn-desbalance-si">Amontonar la ropa (se corrige)</button>
+          <button type="button" class="boton-borde" id="btn-desbalance-no">Amontonar la ropa (no se corrige)</button>
+        </div>
+        <p class="nota">El desbalance se nota recién al centrifugar.</p>
+      </div>
+
+      <div class="bloque">
+        <h3>Memoria</h3>
+        <p class="bloque-estado" id="lavados-estado">0 lavados desde la última autolimpieza.</p>
+        <div class="fila-botones">
+          <button type="button" class="boton-borde" id="btn-30-lavados">Simular 30 lavados</button>
+          <button type="button" class="boton-borde" id="btn-reiniciar">Volver a estado de fábrica</button>
+        </div>
+      </div>
+
+      <details class="guia">
+        <summary>Cómo probar cada función</summary>
+        <ol>
+          <li><b>Panel digital:</b> gira la perilla y usa Temp., Nivel y Centrif. La pantalla muestra el tiempo estimado.</li>
+          <li><b>Sensor de carga:</b> abre la tapa, carga ropa, ciérrala y presiona Inicio. En el pesaje aparecen los kg.</li>
+          <li><b>Nivel automático:</b> con Nivel en AUTO, el agua es 20 L + 5 L por kg. Mientras lava, repone lo que absorbe la ropa.</li>
+          <li><b>Vapor:</b> elige el programa Vapor. Abrir la tapa en esa fase corta el vapor al instante.</li>
+          <li><b>Lavado rápido:</b> hasta 3 kg en 30 minutos o menos.</li>
+          <li><b>Autolimpieza:</b> solo arranca con el tambor vacío. Con «Simular 30 lavados» aparece el aviso.</li>
+          <li><b>Inicio diferido:</b> presiona Diferido hasta la hora que quieras y después Inicio.</li>
+          <li><b>Sobrecarga:</b> con el lavado en marcha abre la tapa y agrega ropa hasta pasar los 10 kg (o el límite del programa).</li>
+          <li><b>Tapa:</b> ábrela en cualquier momento: pausa. Al cerrarla, sigue sola.</li>
+          <li><b>Corte de luz:</b> prueba 19:59 (continúa) y 20:00 (desagota y reinicia).</li>
+        </ol>
+      </details>
+    </section>
+
+    <!-- ===================== SISTEMA OPERATIVO ===================== -->
+    <section class="col-so" aria-labelledby="t-so">
+      <div class="so-cabecera">
+        <h2 id="t-so">Sistema operativo</h2>
+        <span class="so-estado" id="so-estado">REPOSO</span>
+      </div>
+      <dl class="so-resumen">
+        <div><dt>Reloj del sistema</dt><dd id="so-reloj">--:--:--</dd></div>
+        <div><dt>Ticks</dt><dd id="so-ticks">0</dd></div>
+        <div><dt>Paso</dt><dd id="so-paso">sin programa</dd></div>
+      </dl>
+      <div class="so-pestanas" role="tablist" aria-label="Vistas del sistema operativo">
+        <button type="button" role="tab" aria-selected="true" aria-controls="so-ciclo" id="tab-ciclo">Ciclo</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="so-sensores" id="tab-sensores">Sensores</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="so-planificador" id="tab-planificador">Planificador</button>
+      </div>
+      <div class="so-vista" id="so-ciclo" role="tabpanel" aria-labelledby="tab-ciclo"></div>
+      <div class="so-vista" id="so-sensores" role="tabpanel" aria-labelledby="tab-sensores" hidden></div>
+      <div class="so-vista" id="so-planificador" role="tabpanel" aria-labelledby="tab-planificador" hidden></div>
+      <div class="so-registro-cab">
+        <h3>Registro del sistema</h3>
+        <button type="button" class="boton-mini" id="btn-limpiar-log">Limpiar</button>
+      </div>
+      <ol class="so-registro" id="so-registro" aria-live="off"></ol>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p>LAVACRÁN OS 1.0, de Alacrán Group. Proyecto de la materia Sistemas Operativos. <a href="pruebas.html">Ver las pruebas automáticas</a> o <a href="https://github.com/Angelitot/Proyecto-de-Lavarropas---Sistema-Operativo">el código en GitHub</a>.</p>
+  </footer>
+
+  <!-- Núcleo y lógica (sin interfaz) -->
+  <script src="js/config.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/nucleo/eeprom.js"></script>
+  <script src="js/nucleo/kernel.js"></script>
+  <script src="js/nucleo/programas.js"></script>
+  <script src="js/hardware/planta.js"></script>
+  <script src="js/sensores/sensores.js"></script>
+  <script src="js/seguridad/alarmas.js"></script>
+  <script src="js/seguridad/tapa.js"></script>
+  <script src="js/seguridad/energia.js"></script>
+  <script src="js/panel/memoria.js"></script>
+  <script src="js/panel/diferido.js"></script>
+  <script src="js/panel/control.js"></script>
+  <script src="js/nucleo/ciclo.js"></script>
+  <script src="js/nucleo/sistema.js"></script>
+  <!-- Interfaz -->
+  <script src="js/animacion/sonidos.js"></script>
+  <script src="js/animacion/lavarropas.js"></script>
+  <script src="js/panel/panel.js"></script>
+  <script src="js/nucleo/consola.js"></script>
+  <script src="js/animacion/demo.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
