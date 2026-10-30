@@ -39,10 +39,6 @@
 
     // ---- Seguridad ----
     corteLuzLimiteMs: 20 * 60 * 1000,   // hasta 19:59 continúa; desde 20:00 reinicia
-    tapa: {
-      pausarAlAbrir: true,              // función 9 del profe: abrir = pausa, cerrar = continúa
-      seTraba: false                    // acordado: la tapa NUNCA se traba
-    },
     vibracionUmbral: 50,                // 0-100 (acelerómetro)
     maxIntentosBalanceo: 3,
     rpmReducidoDesbalance: 400,

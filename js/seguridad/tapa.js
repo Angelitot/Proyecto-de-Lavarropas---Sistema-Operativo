@@ -29,7 +29,7 @@
           s.kernel.log('SEGURIDAD', 'Vapor cortado al instante: la tapa se abrió');
         }
         if (ciclo.activo()) {
-          if (s.config.tapa.pausarAlAbrir) ciclo.pausar('tapa');
+          ciclo.pausar('tapa');                    // también corta el agua: así se puede medir la ropa agregada
           s.sensores.alAbrirTapa();
         } else if (ciclo.estado === 'FIN') {
           ciclo.irAReposo();
