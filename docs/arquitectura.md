@@ -139,9 +139,9 @@ sequenceDiagram
   R->>K: vuelve la luz (arranque)
   K->>E: leer checkpoint
   K->>RTC: ¿cuánto duró el corte?
-  alt menos de 20:00
+  alt corte menor a 20 minutos
     K->>K: retomar el mismo paso con el mismo avance
-  else 20:00 o más
+  else corte de 20 minutos o más
     K->>K: desagotar y arrancar el programa desde cero
   end
 ```
