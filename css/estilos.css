@@ -104,7 +104,7 @@ h1, h2, h3 { margin: 0; }
 .col-maquina { grid-area: maquina; }
 .col-pruebas { grid-area: pruebas; }
 .col-so { grid-area: so; }
-@media (max-width: 1480px) {
+@media (max-width: 1660px) {
   .escenario { grid-template-columns: minmax(0, 620px) minmax(320px, 1fr); grid-template-areas: "maquina pruebas" "maquina so"; }
   .col-maquina { position: sticky; top: 12px; }
 }
@@ -276,6 +276,9 @@ h1, h2, h3 { margin: 0; }
 .bloque-estado { margin: 0 0 10px; font-size: 14px; color: var(--texto-suave); }
 .bloque-estado strong { color: var(--texto); }
 .fila-botones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+/* Las 4 cargas (3, 6, 9,5 kg y al azar) un poco más compactas para que entren en una sola fila */
+.fila-carga { gap: 6px; }
+.fila-carga .boton-borde { padding: 7px 8px; font-size: 13.5px; white-space: nowrap; }
 .nota { margin: 8px 0 0; font-size: 13px; color: var(--texto-suave); }
 .prendas { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
 .prenda {
@@ -381,6 +384,7 @@ h1, h2, h3 { margin: 0; }
   .so-resumen { grid-template-columns: 1fr 1fr; }
   .so-registro li { grid-template-columns: 56px 1fr; }
   .so-registro li .tipo { display: none; }
+  .fila-carga { display: grid; grid-template-columns: 1fr 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
   .perilla-cara { transition: none; }

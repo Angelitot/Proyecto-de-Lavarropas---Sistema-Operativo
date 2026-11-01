@@ -6,7 +6,7 @@ Proyecto de la materia Sistemas Operativos. Prototipo 1.
 **Pruébalo en el navegador:** https://angelitot.github.io/Proyecto-de-Lavarropas---Sistema-Operativo/
 También funciona sin internet: descarga el repositorio y abre `index.html` con doble clic.
 
-**Pruebas automáticas:** [`pruebas.html`](pruebas.html) verifica las 30 reglas acordadas en segundos.
+**Pruebas automáticas:** [`pruebas.html`](pruebas.html) verifica las 33 reglas acordadas en segundos.
 
 ![Simulador LAVACRÁN: panel, lavarropas por dentro, mesa de pruebas y consola del sistema operativo](docs/img/simulador.jpg)
 
@@ -14,7 +14,7 @@ También funciona sin internet: descarga el repositorio y abre `index.html` con 
 
 - **Panel de control**: perilla con 9 programas, pantalla digital y teclas (Temp., Nivel, Centrif., Diferido, M1–M3, Sonido, Inicio/Pausa).
 - **El lavarropas**: se ve el agua subir, la ropa girar, el vapor, la resistencia y el motor. «Ver por dentro» vuelve transparente el gabinete y muestra cada sensor con su lectura.
-- **Mesa de pruebas**: simula el mundo real: cargar ropa, abrir la tapa, cortar la luz, cerrar la canilla, tapar el desagote, amontonar la ropa.
+- **Mesa de pruebas**: simula el mundo real: cargar ropa (también una cantidad al azar, de 0,5 a 15 kg), abrir la tapa, cortar la luz, cerrar la canilla, tapar el desagote, amontonar la ropa.
 - **Sistema operativo**: el plan de pasos del ciclo, los sensores, el planificador de tareas, las interrupciones y el registro de todo lo que decide el SO.
 
 La simulación corre a x60 (1 minuto de lavado = 1 segundo). «Adelantar fase» salta al paso siguiente.

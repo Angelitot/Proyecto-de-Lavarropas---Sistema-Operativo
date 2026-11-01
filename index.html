@@ -110,15 +110,17 @@
         <h3>Ropa</h3>
         <p class="bloque-estado" id="ropa-estado">El tambor está vacío.</p>
         <div class="prendas" id="prendas"></div>
-        <div class="fila-botones">
+        <div class="fila-botones fila-carga">
           <button type="button" class="boton-borde" data-carga="3">Cargar 3 kg</button>
           <button type="button" class="boton-borde" data-carga="6">Cargar 6 kg</button>
           <button type="button" class="boton-borde" data-carga="9.5">Cargar 9,5 kg</button>
+          <button type="button" class="boton-borde" id="btn-azar">Cargar al azar</button>
         </div>
         <div class="fila-botones">
           <button type="button" class="boton-borde" id="btn-sacar">Sacar la última prenda</button>
           <button type="button" class="boton-borde" id="btn-vaciar">Vaciar el tambor</button>
         </div>
+        <p class="nota">«Cargar al azar» carga entre 0,5 y 15 kg, así que a veces pasa el límite de 10 kg. En el tambor no entran más de 15 kg.</p>
       </div>
 
       <div class="bloque">
@@ -167,7 +169,7 @@
           <li><b>Lavado rápido:</b> hasta 3 kg en 30 minutos o menos.</li>
           <li><b>Autolimpieza:</b> solo arranca con el tambor vacío. Con «Simular 30 lavados» aparece el aviso.</li>
           <li><b>Inicio diferido:</b> presiona Diferido hasta la hora que quieras y después Inicio.</li>
-          <li><b>Sobrecarga:</b> con el lavado en marcha abre la tapa y agrega ropa hasta pasar los 10 kg (o el límite del programa).</li>
+          <li><b>Sobrecarga:</b> usa «Cargar al azar» y presiona Inicio: si pasó los 10 kg (o el límite del programa), el pesaje lo detecta. También con el lavado en marcha: abre la tapa y agrega ropa.</li>
           <li><b>Tapa:</b> ábrela en cualquier momento: pausa. Al cerrarla, sigue sola.</li>
           <li><b>Corte de luz:</b> prueba 19:59 (continúa) y 20:00 (desagota y reinicia).</li>
         </ol>

@@ -202,9 +202,12 @@
       hw.tapaAbierta = false;
       s.kernel.irq('IRQ1', { abierta: false, detalle: 'tapa cerrada' });
     };
-    /** Solo se puede meter ropa con la tapa abierta. */
+    /** Lo que todavía entra en el tambor (lleno hasta el borde = capacidad física). */
+    hw.espacioLibreKg = () => Math.max(0, c.capacidadFisicaKg - hw.ropaKg());
+    /** Solo se puede meter ropa con la tapa abierta y si todavía entra en el tambor. */
     hw.agregarPrenda = function (p) {
       if (!hw.tapaAbierta) return null;
+      if (hw.ropaKg() + p.kg > c.capacidadFisicaKg + 1e-6) return null;   // el tambor está lleno
       const prenda = { id: hw.sigId++, nombre: p.nombre, kg: p.kg, color: p.color || '#8aa', tipo: p.tipo || 'remera', aguaL: 0 };
       hw.prendas.push(prenda);
       return prenda;

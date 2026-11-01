@@ -35,6 +35,12 @@
     s.control.presionar('INICIO');
   }
   const contarLog = (s, texto) => s.kernel.registro.filter(e => e.mensaje.includes(texto)).length;
+  /** Generador "al azar" repetible, para que las pruebas den siempre igual. */
+  function generador(semilla) {
+    let x = semilla >>> 0;
+    return () => { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; };
+  }
+  const kgDe = nombres => nombres.reduce((a, n) => a + L.PRENDAS.find(p => p.nombre === n).kg, 0);
 
   // =====================================================================
   grupo('2 y 3 · Sensor de carga y nivel automático');
@@ -122,6 +128,44 @@
     s.hw.cerrarTapa();
     afirmar(s.ciclo.estadoVisible() === 'EN_MARCHA', 'debía continuar al cerrar');
     cerca(s.ciclo.ropaKg, 10, 0.08, 'carga final');
+  });
+
+  prueba('Cargar al azar: entre 0,5 y 15 kg, el peso justo, y a veces pasa los 10 kg', () => {
+    const azar = generador(7);
+    let mas = 0, menos = 0, maximo = 0;
+    for (let i = 0; i < 400; i++) {
+      const c = L.cargaAleatoria(15, azar, 0.5);
+      cerca(kgDe(c.nombres), c.kg, 1e-6, 'las prendas debían sumar el peso elegido');
+      afirmar(c.kg >= 0.5 && c.kg <= 15, `peso fuera de rango: ${c.kg}`);
+      if (c.kg > 10) mas++; else menos++;
+      maximo = Math.max(maximo, c.kg);
+    }
+    afirmar(mas > 50 && menos > 50, `más de 10 kg: ${mas} veces, hasta 10 kg: ${menos} veces`);
+    afirmar(maximo >= 14.5, `debía llegar cerca de 15 kg y el máximo fue ${maximo}`);
+    afirmar(L.cargaAleatoria(3.2, azar, 0.5).kg <= 3.2, 'con poco espacio no debía pasarse');
+    afirmar(L.cargaAleatoria(0.05, azar, 0.5) === null, 'con el tambor lleno no debía cargar nada');
+  });
+
+  prueba('En el tambor no entran más de 15 kg', () => {
+    const s = nuevo(); s.hw.abrirTapa();
+    for (let i = 0; i < 6; i++) agregar(s, 2.5);
+    cerca(s.hw.ropaKg(), 15, 1e-6, 'debían entrar 15 kg');
+    afirmar(agregar(s, 0.1) === null, 'una prenda más no debía entrar');
+    cerca(s.hw.ropaKg(), 15, 1e-6, 'carga final');
+  });
+
+  prueba('Carga al azar de más de 10 kg: el pesaje la detecta (E3) y no carga agua', () => {
+    const azar = generador(11);
+    let c;
+    do { c = L.cargaAleatoria(15, azar, 0.5); } while (c.kg <= 10.5);
+    const s = nuevo(); s.hw.abrirTapa();
+    c.nombres.forEach(n => s.hw.agregarPrenda(L.PRENDAS.find(p => p.nombre === n)));
+    s.hw.cerrarTapa();
+    cerca(s.hw.ropaKg(), c.kg, 1e-6, 'debían entrar todas las prendas');
+    iniciar(s, 'normal');
+    afirmar(hasta(s, () => s.alarmas.activas.E3, 2 * MIN), `con ${c.kg} kg debía marcar E3`);
+    afirmar(s.hw.aguaLibreL === 0, 'no debía cargar agua');
+    cerca(s.sensores.sobrecarga.excesoKg, c.kg - 10, 0.06, 'exceso informado');
   });
 
   // =====================================================================

@@ -15,6 +15,7 @@ const ARCHIVOS = [
   'js/seguridad/alarmas.js', 'js/seguridad/tapa.js', 'js/seguridad/energia.js',
   'js/panel/memoria.js', 'js/panel/diferido.js', 'js/panel/control.js',
   'js/nucleo/ciclo.js', 'js/nucleo/sistema.js',
+  'js/animacion/demo.js',
   'tests/mini-test.js', 'tests/pruebas.js'
 ];
 

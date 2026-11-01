@@ -27,10 +27,38 @@
     9.5: ['Acolchado', 'Jean', 'Jean', 'Campera', 'Sábana', 'Sábana', 'Toalla', 'Toalla', 'Buzo', 'Remera', 'Remera', 'Medias']
   };
 
+  /**
+   * Arma una carga de ropa al azar (botón "Cargar al azar", pedido por el profesor).
+   * Elige un peso al azar entre minKg y espacioKg (puede pasar los 10 kg) y junta
+   * prendas al azar hasta llegar justo a ese peso. Como las medias pesan 0,1 kg,
+   * siempre se llega exacto. Se trabaja en décimas de kg para no acumular errores.
+   * @param {number} espacioKg  lo que todavía entra en el tambor
+   * @param {function} azar     generador entre 0 y 1 (Math.random; en las pruebas, uno repetible)
+   * @param {number} minKg      carga mínima
+   * @returns {{kg: number, nombres: string[]} | null}  null si no entra nada
+   */
+  L.cargaAleatoria = function (espacioKg, azar = Math.random, minKg = 0.5) {
+    const espacio = Math.floor(espacioKg * 10 + 1e-6);
+    if (espacio < 1) return null;
+    const min = Math.min(Math.max(1, Math.round(minKg * 10)), espacio);
+    const objetivo = min + Math.floor(azar() * (espacio - min + 1));
+    const nombres = [];
+    let resto = objetivo;
+    while (resto > 0) {
+      const caben = L.PRENDAS.filter(p => Math.round(p.kg * 10) <= resto);
+      if (!caben.length) break;
+      const p = caben[Math.floor(azar() * caben.length)];
+      nombres.push(p.nombre);
+      resto -= Math.round(p.kg * 10);
+    }
+    return { kg: (objetivo - resto) / 10, nombres };
+  };
+
   L.crearDemo = function (s, maquina, sonidos) {
     const $ = id => document.getElementById(id);
     const u = L.util;
-    const D = { mensajeRopa: null, mensajeHasta: 0, duracionMs: 1199000 };
+    const D = { mensajeRopa: null, mensajeHasta: 0, duracionMs: 1199000, pendienteKg: 0 };
+    const textoLleno = () => `El tambor está lleno: no entran más de ${u.kg(s.config.capacidadFisicaKg, 0)} kg.`;
 
     // ---------------- Ropa ----------------
     const caja = $('prendas');
@@ -49,7 +77,7 @@
     });
     function formaIcono(tipo) { return L.FORMAS_PRENDA[tipo] || L.FORMAS_PRENDA.remera; }
 
-    function avisoRopa(texto) { D.mensajeRopa = texto; D.mensajeHasta = performance.now() + 3500; }
+    function avisoRopa(texto, ms = 3500) { D.mensajeRopa = texto; D.mensajeHasta = performance.now() + ms; }
 
     function puedeTocarRopa() {
       if (!s.hw.tapaAbierta || maquina.tapaCerrando()) {
@@ -62,16 +90,33 @@
       return true;
     }
 
-    function agregar(nombres) {
-      if (!puedeTocarRopa()) return;
+    // Las prendas caen de a una; pendienteKg es lo que todavía está "en el aire".
+    function agregar(nombres, cadaMs = 140) {
+      if (!puedeTocarRopa()) return false;
       nombres.forEach((n, i) => {
         const def = L.PRENDAS.find(p => p.nombre === n);
-        setTimeout(() => { if (s.hw.tapaAbierta) s.hw.agregarPrenda(def); }, i * 140);
+        D.pendienteKg += def.kg;
+        setTimeout(() => {
+          D.pendienteKg = Math.max(0, Math.round((D.pendienteKg - def.kg) * 100) / 100);
+          if (s.hw.tapaAbierta && !s.hw.agregarPrenda(def)) avisoRopa(textoLleno());
+        }, i * cadaMs);
       });
+      return true;
     }
 
     document.querySelectorAll('[data-carga]').forEach(b => {
       b.addEventListener('click', () => agregar(CARGAS[b.dataset.carga]));
+    });
+    $('btn-azar').addEventListener('click', () => {
+      if (!puedeTocarRopa()) return;
+      const espacio = s.hw.espacioLibreKg() - D.pendienteKg;
+      const carga = L.cargaAleatoria(espacio, Math.random, s.config.cargaAleatoriaMinKg);
+      if (!carga) { avisoRopa(textoLleno()); return; }
+      agregar(carga.nombres, 100);
+      const n = carga.nombres.length;
+      const pasa = carga.kg > s.config.capacidadMaxKg
+        ? ` Es más de lo que admite el lavarropas (${u.kg(s.config.capacidadMaxKg, 0)} kg).` : '';
+      avisoRopa(`Al azar: ${u.kg(carga.kg)} kg en ${n} prenda${n === 1 ? '' : 's'}.${pasa}`, 6000);
     });
     $('btn-sacar').addEventListener('click', () => {
       if (!puedeTocarRopa()) return;

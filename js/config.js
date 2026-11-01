@@ -15,6 +15,8 @@
     // ---- Carga (kilaje) ----
     capacidadMaxKg: 10.0,        // máximo general de ropa seca
     toleranciaKg: 0.05,          // margen del sensor antes de declarar sobrecarga
+    capacidadFisicaKg: 15.0,     // lo que entra a la fuerza en el tambor (lleno hasta el borde); el SO admite 10 kg
+    cargaAleatoriaMinKg: 0.5,    // botón "Cargar al azar": entre 0,5 kg y lo que todavía entre en el tambor
     toleranciaTamborVacioKg: 0.3,// autolimpieza: se acepta hasta 300 g (ej. una media olvidada)
     taraKg: 18.0,                // peso de tina + tambor vacíos sobre las celdas de carga
 

@@ -10,6 +10,8 @@ Todos los números están en un solo archivo, `js/config.js`: si el profesor pid
 | Plataforma | Web: HTML, CSS y JavaScript, sin instalar nada. Publicado en GitHub Pages |
 | Enfoque | Sistemas Operativos: se muestran interrupciones, planificador de tareas, máquina de estados y memoria no volátil |
 | Capacidad | 10,0 kg de ropa seca como máximo general |
+| Capacidad física del tambor | 15 kg: es lo que entra a la fuerza. Más que eso no se puede meter |
+| Carga al azar (pedido del profesor) | Botón «Cargar al azar» en la mesa de pruebas: entre 0,5 y 15 kg, así que a veces pasa los 10 kg y el SO tiene que detectarlo |
 | Límites por programa | Sintéticos 5 kg · Delicado 3 kg · Rápido 3 kg · Autolimpieza 0 kg (tambor vacío) |
 | Mecanismo | Impulsor en el fondo del tambor |
 | Programas | Normal/Algodón, Sintéticos, Delicado, Pesado/Toallas, Rápido, Vapor/Higiene, Enjuague + Centrifugado, Solo centrifugado, Autolimpieza |
@@ -38,6 +40,7 @@ Todos los números están en un solo archivo, `js/config.js`: si el profesor pid
 | Centrifugado | Sin, 400, 600, 800 rpm (sube 60 rpm/s, frena 150 rpm/s); intermedio a 400 rpm |
 | Tara (tina + tambor sobre las celdas de carga) | 18 kg |
 | Tolerancia del sensor de peso | 0,05 kg (0,3 kg para la autolimpieza) |
+| Capacidad física del tambor | 15 kg (`capacidadFisicaKg`) |
 | Umbral de vibración | 50 (escala 0 a 100) |
 | Tiempo para detectar E1 / E2 | 90 s |
 | Guardado en memoria no volátil | cada 5 s, en cada cambio de paso y al detectar la falla de energía |
@@ -163,3 +166,6 @@ Están en `tests/pruebas.js` y se ven en `pruebas.html`.
 | 28 | Pausar, reanudar y cancelar | Pausa, sigue, y al cancelar desagota y vuelve a reposo |
 | 29 | Programa Normal completo con 6 kg | Termina entre 45 y 90 min, sin agua y cuenta un lavado |
 | 30 | Apagar con un programa en marcha | No se apaga |
+| 31 | 400 cargas al azar | Siempre entre 0,5 y 15 kg, las prendas suman justo ese peso, y una parte pasa los 10 kg |
+| 32 | Meter 15 kg y una prenda más | La prenda de más no entra |
+| 33 | Carga al azar de más de 10 kg y presionar Inicio | E3 con el exceso correcto y sin cargar agua |
